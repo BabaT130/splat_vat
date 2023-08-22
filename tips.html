@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+    <html>
+        <head>
+            <title>Splatoon Forum: Tips</title>
+            <style>
+                @font-face {
+                    font-family: Dreamland;
+                    src: url("/Users/aarushtiwari/Downloads/Dreamland Std Regular/Dreamland Std Regular.otf");
+                }
+                html{
+                    background-color: rgb(0, 0, 0);
+                    background-image: url("/Users/aarushtiwari/Downloads/Dreamland Std Regular/Splatoon Forum Background.png");
+                    background-repeat: no-repeat;
+                    background-attachment: fixed; 
+                    background-size: cover;
+                }
+                h1{
+                    color: #e712cb;
+                    font-family: Dreamland;
+                    font-size: xx-large;
+                }
+                h2{
+                    color: #6ee712;
+                    font-family: Dreamland;
+                }
+                a{
+                    color: #e7e012;
+                    font-family: Dreamland;
+                    font-size: xx-large;
+                    margin-left: 5px;
+                    margin-right: 5px;
+                }
+                input{
+                    color: #4b4d4a;
+                    font-family: Dreamland;
+                }
+                button{
+                    color: #6ee712;
+                    background-color: black;
+                    font-family: Dreamland;
+                }
+                body{
+                    color: #cac71c;
+                    font-family: Dreamland;
+                    margin: 30px;
+                }
+                li{
+                    background-color: rgb(37, 37, 37);
+                    margin: 100px;
+                    margin-top: 5px;
+                    margin-bottom: 5px;
+                }
+                .post_title{
+                    color: #12e784;
+                    font-family: Dreamland;
+                    margin-bottom: 20px;
+                    font-size: xx-large;
+                }
+                .timestamp{
+                    display: inline;
+                    margin-right: 10px;
+                }
+                .comments{
+                    display: inline;
+                }
+
+            </style>
+        </head>
+
+        <header>
+            <center><h2>The Splatoon Forum</h2></center>
+            <center><h1 style = "font-size: 50px">Tips and Tricks</h1></center>
+            <center>
+                <a href="/Users/aarushtiwari/VS Studio/index.html">Home</a>
+                <a href="/Users/aarushtiwari/VS Studio/about.html">About</a>
+                <a href="/Users/aarushtiwari/VS Studio/general.html">General</a>
+                <a href="/Users/aarushtiwari/VS Studio/anarchy.html">Anarchy Talk</a>
+                <a href="/Users/aarushtiwari/VS Studio/salmon.html">Salmon Run</a>
+                <a href="/Users/aarushtiwari/VS Studio/LFG.html">LFG</a>
+                <a href="/Users/aarushtiwari/VS Studio/tips.html">Tips and Tricks</a>
+                <br>
+                <h2>Create Post</h2>
+                <br>
+                <input class="title_input", placeholder="Post Title">
+                <br>
+                <input class="post_author", placeholder="Username">
+                <br>
+                <!--<input type="file" class="file_upload", style="color:red", accept="image/png, video/mp4" />-->
+                <input class="post_content", placeholder="Post Body(text, links, etc)">
+                <br>
+                <button>Create Post</button>
+            </center>
+        </header>
+
+        <body>
+            <p align = center>Posts:</p>
+            <ol>
+                <!--POSTS GO HERE-->
+            </ol>
+        </body>
+
+        <script src="/Users/aarushtiwari/VS Studio/generaldata.js"></script>
+
+        <script type="module">
+            // Import the functions you need from the SDKs you need
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+            import { getDatabase, ref, set, get, child, update } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
+
+            const firebaseConfig = {
+                apiKey: "AIzaSyB9mf6NBiCQ975eI810UMsIZL7XuJaQjWM",
+                authDomain: "the-splatoon-forum-ce6da.firebaseapp.com",
+                databaseURL: "https://the-splatoon-forum-ce6da-default-rtdb.firebaseio.com",
+                projectId: "the-splatoon-forum-ce6da",
+                storageBucket: "the-splatoon-forum-ce6da.appspot.com",
+                messagingSenderId: "832731871914",
+                appId: "1:832731871914:web:353d53257d72c6784faed3"
+            };
+            
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+
+            const db = getDatabase()
+            const data_reference = ref(db)
+
+            function savePost(post){
+                set(ref(db, "/" + post.id), {
+                    type: "tips",
+                    id: post.id,
+                    title: post.title,
+                    author: post.author,
+                    date: post.date,
+                    content: post.content,
+                    comments: post.comments,
+                })
+                }
+            
+            function getPosts(){
+                posts = []
+
+                for (let g = 0; g < 10; g++){
+                    get(child(data_reference, "/" + g))
+                    .then((snapshot)=>{
+                    if (snapshot.exists()){
+                        if (snapshot.val().type === "tips"){
+                            var post = {
+                                type: snapshot.val().id,
+                                id: snapshot.val().id,
+                                title: snapshot.val().title,
+                                author: snapshot.val().author,
+                                date: snapshot.val().date,
+                                content: snapshot.val().content,
+                                file: snapshot.val().file,
+                                comments: snapshot.val().comments,
+                            }
+                            addPost(post)
+                        }
+                    }
+                })
+                }}
+
+            getPosts()
+
+            for(let post of posts){
+                savePost(post) 
+            }
+
+            //--------------------
+
+            var i = 0
+            var container = document.querySelector("ol")
+            var num_comments = null
+
+            function addPost(post){
+                get(child(ref(db), "/" + post.id + "/comments"))
+                .then((snapshot)=>{
+                    if (snapshot.exists()) {
+                        num_comments = snapshot.size
+                    }
+                    else{
+                        num_comments = 1
+                    }
+                    posts.push(post)
+                    var html = `
+                    <li class="post_list", align = center>
+                        <a href="/Users/aarushtiwari/VS Studio/thread.html?${post.id}">
+                            <h2 class="post_title">${post.title} ~ ${post.author}</h2>
+                            <div class="post_info">
+                                <p class="timestamp">${new Date(post.date).toLocaleString()}</p>
+                                <p class="comments">${num_comments} Comments</p>
+                            </div>
+                        </a>
+                    </li>
+                    `
+                    container.insertAdjacentHTML("afterbegin", html)
+                })
+            }
+
+            for(let post of posts) {
+                addPost(post)
+            }
+
+            var button = document.querySelector("button")
+            button.addEventListener("click", function() {
+                var text = document.querySelector(".title_input")
+                var post_author = document.querySelector(".post_author")
+                var post_content = document.querySelector(".post_content")
+                //var post_image = document.querySelector(".file_upload")
+                var p
+
+                //var post_content_url = URL.createObjectURL(post_image.files[0])
+
+                get(child(ref(db), "/id"))
+                .then((snapshot)=>{
+                    if (snapshot.exists){
+                        p = snapshot.val()
+                        var post ={
+                            id: p,
+                            title: text.value,
+                            author: post_author.value,
+                            date: Date.now(),
+                            //content: post_image.value,
+                            //file: post_content_url,
+                            content: post_content.value,
+                            comments: [
+                                {
+                                    author: "System",
+                                    date: Date.now(),
+                                    content: "Leave a Comment Here!",
+                                },
+                            ],
+                        }
+                
+                        if (text.value != "" && post_author.value != ""){
+                            addPost(post)
+                        }
+                        else{
+                            alert("Post Author and/or Title Missing")
+                        }
+                        update(ref(db, "/"), {id: p+1})
+                        savePost(post)
+                    }
+                    })
+                })
+            
+        </script>
+
+    </html>
