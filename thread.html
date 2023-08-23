@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+    <html>
+        <head>
+            <title>Splatoon Forum: General</title>
+            <style>
+                @font-face {
+                    font-family: Dreamland;
+                    src: url("/Users/aarushtiwari/Downloads/Dreamland Std Regular/Dreamland Std Regular.otf");
+                }
+                html{
+                    background-color: rgb(0, 0, 0);
+                    background-image: url("/Users/aarushtiwari/Downloads/Dreamland Std Regular/Splatoon Forum Background.png");
+                    background-repeat: no-repeat;
+                    background-attachment: fixed; 
+                    background-size: cover;
+                }
+                h1{
+                    color: #e712cb;
+                    font-family: Dreamland;
+                    font-size: xx-large;
+                }
+                h2{
+                    color: #6ee712;
+                    font-family: Dreamland;
+                }
+                h3{
+                    color: aqua;
+                    font-size: x-large;
+                    border-radius: 50px;
+                }
+                .post_content{
+                    background-color: #585955;
+                    background-position: 30px;
+                    border-radius: 50px;
+                    font-size: xx-large;
+                }
+
+                p{
+                    margin-left: 200px;
+                    margin-right: 200px;
+                }
+                a{
+                    color: #e7e012;
+                    font-family: Dreamland;
+                    font-size: xx-large;
+                    margin-left: 5px;
+                    margin-right: 5px;
+                }
+                input{
+                    color: #4b4d4a;
+                    font-family: Dreamland;
+                }
+                button{
+                    color: #6ee712;
+                    background-color: black;
+                    font-family: Dreamland;
+                }
+                body{
+                    color: #cac71c;
+                    font-family: Dreamland;
+                }
+                li{
+                    background-color: rgb(37, 37, 37);
+                    margin: 100px;
+                    margin-top: 5px;
+                    margin-bottom: 5px;
+                }
+                .post_title{
+                    color: #12e784;
+                    font-family: Dreamland;
+                    margin-bottom: 20px;
+                    font-size: xx-large;
+                }
+                .timestamp{
+                    display: inline;
+                    margin-right: 10px;
+                }
+                .comments{
+                    display: inline;
+                }
+                img{
+                    width: 1024px;
+                    height: 640px;
+                }
+                video{
+                    width: 1024px;
+                    height: 640px;
+                }
+
+            </style>
+        </head>
+
+        <header>
+            <center><h2>The Splatoon Forum</h2></center>
+            <center><h1 style = "font-size: 50px">General Splatoon</h1></center>
+            <center>
+                <a href="/Users/aarushtiwari/VS Studio/index.html">Home</a>
+                <a href="/Users/aarushtiwari/VS Studio/about.html">About</a>
+                <a href="/Users/aarushtiwari/VS Studio/general.html">General</a>
+                <a href="/Users/aarushtiwari/VS Studio/anarchy.html">Anarchy Talk</a>
+                <a href="/Users/aarushtiwari/VS Studio/salmon.html">Salmon Run</a>
+                <a href="/Users/aarushtiwari/VS Studio/LFG.html">LFG</a>
+                <a href="/Users/aarushtiwari/VS Studio/tips.html">Tips and Tricks</a>
+                <a href="/Users/aarushtiwari/VS Studio/replay.html">Replays</a>
+            </center>
+        </header>
+
+        <body align = center>
+            <div class = "post_content">
+                <!---POST GOES HERE-->
+            </div>
+
+            <p align = center>
+                <input class="author_input", placeholder="Username">
+                <input class="comment_input", placeholder="Write a Comment...">
+                <button>Comment</button>
+            </p>
+
+            <div class="comment">
+                <!---COMMENTS GO HERE-->
+            </div>
+        </body>
+
+        <script src="/Users/aarushtiwari/VS Studio/generaldata.js"></script>
+        <script type="module">
+            // Import the functions you need from the SDKs you need
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+            import { getDatabase, ref, set, get, child, push, update} from "https://www.gstatic.com/firebasejs/10.1.0/firebase-database.js";
+
+            const firebaseConfig = {
+                apiKey: "AIzaSyB9mf6NBiCQ975eI810UMsIZL7XuJaQjWM",
+                authDomain: "the-splatoon-forum-ce6da.firebaseapp.com",
+                databaseURL: "https://the-splatoon-forum-ce6da-default-rtdb.firebaseio.com",
+                projectId: "the-splatoon-forum-ce6da",
+                storageBucket: "the-splatoon-forum-ce6da.appspot.com",
+                messagingSenderId: "832731871914",
+                appId: "1:832731871914:web:353d53257d72c6784faed3"
+            };
+            
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+
+            const db = getDatabase()
+            
+
+            var id = window.location.search.slice(1);
+            var heading = document.querySelector(".post_content")
+            var comment_section = document.querySelector(".comment")
+            var post = null
+            var c = null
+
+            const data_reference = ref(db)
+
+            function loadPostdata(){
+                post = []
+                get(child(data_reference, "/" + id))
+                .then((snapshot)=>{
+                    if (snapshot.exists()) {
+                        post = {
+                            id: snapshot.val().id,
+                            title: snapshot.val().title,
+                            author: snapshot.val().author,
+                            date: snapshot.val().date,
+                            content: snapshot.val().content,
+                            file: snapshot.val().file,
+                            comments: snapshot.val().comments,
+                        }
+                        showPost()
+                        loadComments()
+                    }
+                })
+            }
+
+            function loadComments(){
+                for (let c = 0; c < 10; c++){
+                    get(child(data_reference, "/" + id + "/comments/" + c))
+                    .then((snapshot)=>{
+                        if (snapshot.exists()){
+                            var comment = {
+                                author: snapshot.val().author,
+                                date: snapshot.val().date,
+                                content: snapshot.val().content,
+                            }
+                            addComment(comment)
+                        }
+                    })
+            }}
+
+            loadPostdata()
+
+            function showPost(){
+                var file_extension = post.content.split(".").pop()
+                if (file_extension == "png"){
+                var post_stuff = `
+                <h3>${post.title}</h3>
+                <img src="${post.file}" />`
+                heading.insertAdjacentHTML("beforeend", post_stuff)
+                }
+                else if (file_extension == "mov"){
+                    var post_stuff = `
+                    <h3>${post.title}</h3>
+                    <video controls>
+                        <source src="${post.file}" />
+                    </video>`
+                    heading.insertAdjacentHTML("beforeend", post_stuff)
+                }
+                else{
+                    var post_stuff = `
+                    <h3>${post.title}</h3>
+                    <p>${post.content}</p>`
+                    heading.insertAdjacentHTML("beforeend", post_stuff)
+                }
+            }
+
+            function addComment(comment){
+                var html = `
+                <p style="background-color:#4b4d4a;">
+                    ${comment.author},  ${new Date(comment.date).toLocaleString()}
+                    <br>
+                    ${comment.content}
+                </p>
+                `
+                comment_section.insertAdjacentHTML("beforeend", html)
+            }
+
+            function saveComment(comment){
+                get(child(data_reference, "/cid"))
+                .then((snapshot)=>{
+                    if (snapshot.exists()){
+                        c = snapshot.val()
+                    }
+                    set(ref(db, "/" + id + "/comments/" + c), {
+                        author: comment.author,
+                        date: comment.date,
+                        content: comment.content,
+                    })
+                    update(ref(db, "/"), {cid: c+1})
+                })
+            }
+
+            var button = document.querySelector("button")
+            button.addEventListener("click", function(){
+                var text = document.querySelector(".comment_input")
+                var author = document.querySelector(".author_input")
+                var comment ={
+                    author: author.value,
+                    date: Date.now(),
+                    content: text.value,
+                }
+                if (text.value != "" && author.value != ""){
+                    addComment(comment)
+                    text.value = ""
+                    author.value = ""
+                }
+                else{
+                    alert("Comment Author and/or Content Missing")
+                }
+                post.comments.push(comment)
+                saveComment(comment)
+
+                }
+            )
+            
+        </script>
+
+    </html>
