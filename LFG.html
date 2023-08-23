@@ -137,7 +137,7 @@
             function getPosts(){
                 posts = []
 
-                for (let g = 0; g < 10; g++){
+                for (let g = 0; g < 100; g++){
                     get(child(data_reference, "/" + g))
                     .then((snapshot)=>{
                     if (snapshot.exists()){
@@ -152,6 +152,9 @@
                                 file: snapshot.val().file,
                                 comments: snapshot.val().comments,
                             }
+                        else{
+                            continue
+                        }
                             addPost(post)
                         }
                     }
