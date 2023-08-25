@@ -230,13 +230,16 @@
                             ],
                         }
                 
-                        if (text.value != "" && post_author.value != ""){
+                        if (text.value != "" && post_author.value != "" && text.value.toUpperCase() != "ADMIN"){
                             addPost(post)
                             update(ref(db, "/"), {id: p+1})
                             savePost(post)
                         }
-                        else{
+                        else if (text.value === "" && post_author.value === ""){
                             alert("Post Author and/or Title Missing")
+                        }
+                        else if (text.value.toUpperCase() === "ADMIN"){
+                            alert("Author cannot be Admin")
                         }
                     }
                     })
