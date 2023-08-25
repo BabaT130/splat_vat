@@ -232,12 +232,12 @@
                 
                         if (text.value != "" && post_author.value != ""){
                             addPost(post)
+                            update(ref(db, "/"), {id: p+1})
+                            savePost(post)
                         }
                         else{
                             alert("Post Author and/or Title Missing")
                         }
-                        update(ref(db, "/"), {id: p+1})
-                        savePost(post)
                     }
                     })
                 })
