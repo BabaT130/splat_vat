@@ -230,12 +230,12 @@
                             ],
                         }
                 
-                        if (text.value != "" && post_author.value != "" && post_author.value.toUpperCase() != "ADMIN"){
+                         if (text.value != "" && post_author.value != "" && post_author.value.toUpperCase() != "ADMIN"){
                             addPost(post)
                             update(ref(db, "/"), {id: p+1})
                             savePost(post)
                         }
-                        else if (text.value != "" && post_author.value != ""){
+                        else if (text.value === "" && post_author.value === ""){
                             alert("Post Author and/or Title Missing")
                         }
                         else if (post_author.value.toUpperCase() === "ADMIN"){
