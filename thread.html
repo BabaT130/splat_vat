@@ -251,7 +251,7 @@
                     update(ref(db, "/"), {id: p+1})
                     savePost(post)
                     }
-                else if (text.value != "" && author.value != ""){
+                else if (text.value === "" && author.value === ""){
                     alert("Post Author and/or Title Missing")
                     }
                 else if (author.value.toUpperCase() === "ADMIN"){
