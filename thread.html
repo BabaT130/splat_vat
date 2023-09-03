@@ -247,18 +247,16 @@
                     date: Date.now(),
                     content: text.value,
                 }
-                if (text.value != "" && author.value != "" && author.value.toUpperCase() != "ADMIN"){
-                    addPost(post)
-                    update(ref(db, "/"), {id: p+1})
-                    savePost(post)
-                    }
-                else if (text.value === "" && author.value === ""){
-                    alert("Post Author and/or Title Missing")
-                    }
-                else if (author.value.toUpperCase() === "ADMIN"){
-                    alert("Author cannot be Admin")
-                    }
-
+                if (text.value != "" && author.value != ""){
+                    addComment(comment)
+                    text.value = ""
+                    author.value = ""
+                    post.comments.push(comment)
+                    saveComment(comment)
+                }
+                else{
+                    alert("Comment Author and/or Content Missing")
+                }
                 }
             )
             
